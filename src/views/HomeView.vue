@@ -1,8 +1,8 @@
 <script setup>
 import { mdiChevronDown, mdiChevronUp, mdiCircle } from '@mdi/js';
 import { ref } from 'vue';
-const show = ref(false)
 
+const show = ref(false)
 
 </script>
 
