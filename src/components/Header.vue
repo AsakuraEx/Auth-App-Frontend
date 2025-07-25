@@ -1,5 +1,6 @@
 <script setup>
-    import { computed, onMounted, ref, watch } from 'vue';
+    
+    import { onMounted, ref, watch } from 'vue';
     import { useAuthStore } from '@/stores/auth.store';
     import { useToastStore } from '@/stores/toast.store';
     import { useRouter } from 'vue-router';
@@ -11,6 +12,7 @@
     const { xlAndDown } = useDisplay()
     const drawer = ref(true);
     const rail = ref(true)
+
     drawer.value = xlAndDown.value;
 
     watch(xlAndDown, (val)=>{
