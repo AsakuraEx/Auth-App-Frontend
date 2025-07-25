@@ -1,10 +1,17 @@
-import { mdiAccount, mdiBulletinBoard, mdiCog } from "@mdi/js";
+import { mdiAccount, mdiBulletinBoard, mdiCog, mdiHome } from "@mdi/js";
 
 export const menu = [
     {
+        nombre: "Inicio",
+        permisos: [1,2,3,4,5],
+        icon: mdiHome,
+        route: { name: 'home' }
+    },
+    {
         nombre: "Usuarios",
         permisos: [1,2,3],
-        icon: mdiAccount
+        icon: mdiAccount,
+        route: { name: 'usuarios' }
     },
     {
         nombre: "Configuración",
@@ -14,12 +21,14 @@ export const menu = [
             {
                 nombre: "Roles",
                 permisos: [4, 5],
-                icon: mdiBulletinBoard
+                icon: mdiBulletinBoard,
+                route: { name: 'roles' }
             },
             {
                 nombre: "Permisos",
                 permisos: [4, 5],
-                icon: mdiBulletinBoard
+                icon: mdiBulletinBoard,
+                route: { name: 'permisos' }
             }
         ]
     }

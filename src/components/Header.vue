@@ -8,6 +8,16 @@ import { useDisplay } from 'vuetify/lib/composables/display';
 import { menu } from '@/common/menu-index';
 import { jwtDecode } from 'jwt-decode';
 
+const { xlAndDown } = useDisplay()
+const drawer = ref(true);
+const rail = ref(true)
+drawer.value = xlAndDown.value;
+
+watch(xlAndDown, (val)=>{
+    drawer.value = val
+})
+
+//---------------------------------------------------------------------------------
 const authStore = useAuthStore()
 const toastStore = useToastStore()
 const router = useRouter()
@@ -16,17 +26,19 @@ const errores = ref({})
 
 const decoded = jwtDecode(localStorage.getItem('token'))
 const menuOptions = ref(menu)
-const informacionRol = ref({})
+const informacionRol = ref([])
 
-const { xlAndDown } = useDisplay()
-const drawer = ref(true);
-const rail = ref(true)
-
-const grupoPermitido = computed(()=> {
-    const arrayOptions = menuOptions.value.permisos
-    console.log(arrayOptions)
-    return true
+onMounted(async ()=>{
+    const {data} = await authStore.obtenerRolesyPermisos(decoded.rol_id)
+    informacionRol.value = data.permisos;
 })
+
+const showOptions = (arrayPermisos) => {
+
+    return arrayPermisos.some(permisoId =>
+        informacionRol.value.some(permiso => permiso.id === permisoId)
+    );
+}
 
 const logoutEventHandler = async () => {
     const response = await authStore.CerrarSesion(localStorage.getItem('token'));
@@ -34,6 +46,8 @@ const logoutEventHandler = async () => {
     if(response.response){
         errores.value = response.response.data;
         toastStore.MostrarError(errores.value.message)
+        localStorage.clear()
+        router.push({name: 'login'})
         return
     }
 
@@ -44,21 +58,7 @@ const logoutEventHandler = async () => {
     }
 }
 
-drawer.value = xlAndDown.value;
 
-watch(xlAndDown, (val)=>{
-    drawer.value = val
-})
-
-
-
-onMounted(async ()=>{
-
-    const {data} = await authStore.obtenerRolesyPermisos(decoded.rol_id)
-    informacionRol.value = data;
-
-    grupoPermitido()
-})
 
 </script>
 
@@ -99,7 +99,9 @@ onMounted(async ()=>{
                 link 
                 :prepend-icon="option.icon" 
                 :title="option.nombre"
+                :to="option.route"
                 v-if="!option.submenus"
+                v-show="showOptions(option.permisos)"
             >
             </v-list-item>
 
@@ -113,6 +115,7 @@ onMounted(async ()=>{
                         v-bind="props"
                         :prepend-icon="option.icon"
                         :title="option.nombre"
+                        v-show="showOptions(option.permisos)"
                     ></v-list-item>
                 </template>
 
@@ -121,6 +124,8 @@ onMounted(async ()=>{
                     v-for="submenu in option.submenus" 
                     :prepend-icon="submenu.icon" 
                     :title="submenu.nombre"
+                    :to="submenu.route"
+                    v-show="showOptions(submenu.permisos)"
                 >
                 </v-list-item>
 

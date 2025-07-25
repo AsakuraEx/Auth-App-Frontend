@@ -17,6 +17,8 @@ const errores = ref({})
 const SubmitHandledEvent = async () => {
     const response = await authStore.IniciarSesion(credenciales.email, credenciales.contraseña);
 
+    console.log(response)
+
     if(response.token){
         localStorage.setItem('token', response.token)
         localStorage.setItem('expiracion', response.expiracion)

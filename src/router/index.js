@@ -19,6 +19,24 @@ const router = createRouter({
       component: () => import('../views/LoginView.vue'),
       beforeEnter: notAuthGuard
     },
+    {
+      path: '/usuarios',
+      name: 'usuarios',
+      component: () => import('../views/UserView.vue'),
+      beforeEnter: authGuard
+    },
+    {
+      path: '/roles',
+      name: 'roles',
+      component: () => import('../views/RolesView.vue'),
+      beforeEnter: authGuard
+    },
+    {
+      path: '/permisos',
+      name: 'permisos',
+      component: () => import('../views/PermisosView.vue'),
+      beforeEnter: authGuard
+    },
   ],
 })
 
