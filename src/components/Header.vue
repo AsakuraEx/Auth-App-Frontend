@@ -1,64 +1,62 @@
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue';
-import { useAuthStore } from '@/stores/auth.store';
-import { useToastStore } from '@/stores/toast.store';
-import { useRouter } from 'vue-router';
-import { mdiChevronLeft, mdiLogout } from '@mdi/js';
-import { useDisplay } from 'vuetify/lib/composables/display';
-import { menu } from '@/common/menu-index';
-import { jwtDecode } from 'jwt-decode';
+    import { computed, onMounted, ref, watch } from 'vue';
+    import { useAuthStore } from '@/stores/auth.store';
+    import { useToastStore } from '@/stores/toast.store';
+    import { useRouter } from 'vue-router';
+    import { mdiChevronLeft, mdiLogout } from '@mdi/js';
+    import { useDisplay } from 'vuetify/lib/composables/display';
+    import { menu } from '@/common/menu-index';
+    import { jwtDecode } from 'jwt-decode';
 
-const { xlAndDown } = useDisplay()
-const drawer = ref(true);
-const rail = ref(true)
-drawer.value = xlAndDown.value;
+    const { xlAndDown } = useDisplay()
+    const drawer = ref(true);
+    const rail = ref(true)
+    drawer.value = xlAndDown.value;
 
-watch(xlAndDown, (val)=>{
-    drawer.value = val
-})
+    watch(xlAndDown, (val)=>{
+        drawer.value = val
+    })
 
-//---------------------------------------------------------------------------------
-const authStore = useAuthStore()
-const toastStore = useToastStore()
-const router = useRouter()
+    //---------------------------------------------------------------------------------
+    const authStore = useAuthStore()
+    const toastStore = useToastStore()
+    const router = useRouter()
 
-const errores = ref({})
+    const errores = ref({})
 
-const decoded = jwtDecode(localStorage.getItem('token'))
-const menuOptions = ref(menu)
-const informacionRol = ref([])
+    const decoded = jwtDecode(localStorage.getItem('token'))
+    const menuOptions = ref(menu)
+    const informacionRol = ref([])
 
-onMounted(async ()=>{
-    const {data} = await authStore.obtenerRolesyPermisos(decoded.rol_id)
-    informacionRol.value = data.permisos;
-})
+    onMounted(async ()=>{
+        const {data} = await authStore.obtenerRolesyPermisos(decoded.rol_id)
+        informacionRol.value = data.permisos;
+    })
 
-const showOptions = (arrayPermisos) => {
+    const showOptions = (arrayPermisos) => {
 
-    return arrayPermisos.some(permisoId =>
-        informacionRol.value.some(permiso => permiso.id === permisoId)
-    );
-}
-
-const logoutEventHandler = async () => {
-    const response = await authStore.CerrarSesion(localStorage.getItem('token'));
-
-    if(response.response){
-        errores.value = response.response.data;
-        toastStore.MostrarError(errores.value.message)
-        localStorage.clear()
-        router.push({name: 'login'})
-        return
+        return arrayPermisos.some(permisoId =>
+            informacionRol.value.some(permiso => permiso.id === permisoId)
+        );
     }
 
-    if(response.status === 200){
-        localStorage.removeItem('token')
-        localStorage.removeItem('expiracion')
-        router.push({name: 'login'})
+    const logoutEventHandler = async () => {
+        const response = await authStore.CerrarSesion(localStorage.getItem('token'));
+
+        if(response.response){
+            errores.value = response.response.data;
+            toastStore.MostrarError(errores.value.message)
+            localStorage.clear()
+            router.push({name: 'login'})
+            return
+        }
+
+        if(response.status === 200){
+            localStorage.removeItem('token')
+            localStorage.removeItem('expiracion')
+            router.push({name: 'login'})
+        }
     }
-}
-
-
 
 </script>
 
