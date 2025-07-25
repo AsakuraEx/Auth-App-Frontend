@@ -29,10 +29,12 @@
     const decoded = jwtDecode(localStorage.getItem('token'))
     const menuOptions = ref(menu)
     const informacionRol = ref([])
+    const rolUsuario = ref('')
 
     onMounted(async ()=>{
         const {data} = await authStore.obtenerRolesyPermisos(decoded.rol_id)
         informacionRol.value = data.permisos;
+        rolUsuario.value = data.nombre;
     })
 
     const showOptions = (arrayPermisos) => {
@@ -78,7 +80,7 @@
             <v-list-item 
                 prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg" 
                 :title="decoded.nombre+ ' '+decoded.apellido" 
-                :subtitle="informacionRol.nombre" 
+                :subtitle="rolUsuario" 
             >
                 <template v-slot:append>
                 <v-btn

@@ -15,19 +15,37 @@ const credenciales = reactive({
 const errores = ref({})
 
 const SubmitHandledEvent = async () => {
-    const response = await authStore.IniciarSesion(credenciales.email, credenciales.contraseña);
 
-    console.log(response)
-
-    if(response.token){
-        localStorage.setItem('token', response.token)
-        localStorage.setItem('expiracion', response.expiracion)
-        router.push({name: 'home'})
+    if(Object.values(credenciales).includes('')){
+        toastStore.MostrarError('Todos los campos son requeridos para iniciar sesión')
+        return
     }
 
-    if(response.response){
-        errores.value = response.response.data;
-        toastStore.MostrarError(errores.value.message)
+    const response = await authStore.IniciarSesion(credenciales.email, credenciales.contraseña);
+
+    if(response){
+
+        // Respuesta exitosa
+        if(response.token){
+            localStorage.setItem('token', response.token)
+            localStorage.setItem('expiracion', response.expiracion)
+            router.push({name: 'home'})
+        }
+
+        // Error controlado
+        if(response.response){
+            errores.value = response.response.data;
+            toastStore.MostrarError(errores.value.message)
+            return
+        }
+
+        // Error no controlado
+        if(response.message){
+            errores.value = response.message;
+            toastStore.MostrarError(errores.value+ ': Hubo un problema de red')
+            return
+        }
+
     }
 
 }

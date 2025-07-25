@@ -23,7 +23,7 @@ watch(()=>route.name, (path)=>{
     
     <Header v-if="!login"/>
 
-    <v-main class="d-flex justify-center">
+    <v-main class="d-flex justify-center bg-grey-lighten-5">
 
       <v-container>
 

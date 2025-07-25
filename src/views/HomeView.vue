@@ -1,6 +1,6 @@
 <script setup>
 import { mdiChevronDown, mdiChevronUp, mdiCircle } from '@mdi/js';
-import { onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 const show = ref(false)
 
@@ -10,7 +10,9 @@ const show = ref(false)
 <template>
 
 
-    <h1>Historial de Actualizaciones</h1>
+    <div class="pa-4">
+        <p class="text-h4">Bienvenido al sistema de autenticación</p>
+    </div>
 
     <v-card 
         variant="tonal"
