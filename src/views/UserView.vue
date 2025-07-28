@@ -1,11 +1,13 @@
 <script setup>
-import { mdiSquareEditOutline, mdiTrashCan } from '@mdi/js';
+import { mdiContentSave, mdiSquareEditOutline, mdiTrashCan, mdiUpdate } from '@mdi/js';
 import { onMounted, ref } from 'vue';
 import { useUsuarioStore } from '@/stores/usuarios.store';
 
     const usuarioStore = useUsuarioStore()
 
     const usuarios = ref([]);
+
+    const isModalOpen = ref(false)
 
     const SwitchUsuario = async (id) => {
         const response = await usuarioStore.toggleEstadoUsuario(id)
@@ -54,6 +56,7 @@ import { useUsuarioStore } from '@/stores/usuarios.store';
             color="indigo-darken-1"
             rounded="xl"
             elevation="4"
+            @click="isModalOpen = true"
         >
             Agregar usuario
         </v-btn>
@@ -131,6 +134,29 @@ import { useUsuarioStore } from '@/stores/usuarios.store';
             </tbody>
         </v-table>
 
+        <v-dialog
+            v-model="isModalOpen"
+            width="auto"
+        >
+        <v-card
+            max-width="400"
+            :prepend-icon="mdiContentSave"
+            title="Agregar nuevo usuario"
+        >
+
+            <v-card-text>
+                Formulario de ingreso de usuario
+            </v-card-text>
+
+            <template v-slot:actions>
+            <v-btn
+                class="ms-auto"
+                text="Cerrar"
+                @click="isModalOpen = false"
+            ></v-btn>
+            </template>
+        </v-card>
+        </v-dialog>
 
     </v-sheet>
 </template>
