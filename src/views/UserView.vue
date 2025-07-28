@@ -1,13 +1,30 @@
 <script setup>
-import { mdiContentSave, mdiSquareEditOutline, mdiTrashCan, mdiUpdate } from '@mdi/js';
-import { onMounted, ref } from 'vue';
+import { mdiContentSave, mdiSquareEditOutline } from '@mdi/js';
+import { onMounted, reactive, ref } from 'vue';
 import { useUsuarioStore } from '@/stores/usuarios.store';
+import { rules } from '@/common/rules-form';
+import { useRolStore } from '@/stores/roles.store';
+import { useToastStore } from '@/stores/toast.store';
 
     const usuarioStore = useUsuarioStore()
+    const rolStore = useRolStore()
+    const toastStore = useToastStore()
 
     const usuarios = ref([]);
 
-    const isModalOpen = ref(false)
+    const roles = ref([])
+
+    const agregarModal = ref(false)
+
+    const nuevoUsuario = reactive({
+        nombre: '',
+        apellido: '',
+        email: '',
+        documento: '',
+        telefono: '',
+        contraseña: '',
+        rol_id: null
+    })
 
     const SwitchUsuario = async (id) => {
         const response = await usuarioStore.toggleEstadoUsuario(id)
@@ -16,9 +33,14 @@ import { useUsuarioStore } from '@/stores/usuarios.store';
 
     onMounted(async ()=>{
 
-        const response = await usuarioStore.obtenerUsuarios();
+        await obtenerUsuarios()
 
-        console.log(response)
+        roles.value = await rolStore.obtenerRoles()
+
+    })
+
+    const obtenerUsuarios = async () =>{
+        const response = await usuarioStore.obtenerUsuarios();
 
         // Respuesta exitosa
         if(response.data){
@@ -38,8 +60,27 @@ import { useUsuarioStore } from '@/stores/usuarios.store';
             toastStore.MostrarError(errores.value+ ': Hubo un problema de red')
             return
         }
+    }
 
-    })
+    const submitHandledEvent = async () => {
+
+        const response = await usuarioStore.agregarUsuario(nuevoUsuario);
+        if(response){
+           if(response.data){
+               toastStore.MostrarConfirmacion('Se creo el usuario correctamente')
+               await obtenerUsuarios()
+               agregarModal.value = false
+               return
+           }
+           
+           if(response.response){
+                toastStore.MostrarError(response.response.data.message)
+           }
+        }
+
+        
+
+    }
 
 
 
@@ -56,7 +97,7 @@ import { useUsuarioStore } from '@/stores/usuarios.store';
             color="indigo-darken-1"
             rounded="xl"
             elevation="4"
-            @click="isModalOpen = true"
+            @click="agregarModal = true"
         >
             Agregar usuario
         </v-btn>
@@ -93,7 +134,7 @@ import { useUsuarioStore } from '@/stores/usuarios.store';
                     Estado
                 </th>
                 <th class="text-left font-weight-bold">
-                    Acción
+                    Editar
                 </th>
             </tr>
             </thead>
@@ -123,20 +164,14 @@ import { useUsuarioStore } from '@/stores/usuarios.store';
                         variant="text"
                     >
                     </v-btn>
-                    <v-btn 
-                        :icon="mdiTrashCan" 
-                        class="text-red-darken-1"
-                        variant="text"
-                    >
-                    </v-btn>
                 </td>
             </tr>
             </tbody>
         </v-table>
 
         <v-dialog
-            v-model="isModalOpen"
-            width="auto"
+            v-model="agregarModal"
+            width="550px"
         >
         <v-card
             max-width="400"
@@ -145,16 +180,73 @@ import { useUsuarioStore } from '@/stores/usuarios.store';
         >
 
             <v-card-text>
-                Formulario de ingreso de usuario
-            </v-card-text>
 
-            <template v-slot:actions>
-            <v-btn
-                class="ms-auto"
-                text="Cerrar"
-                @click="isModalOpen = false"
-            ></v-btn>
-            </template>
+                <v-form @submit.prevent="submitHandledEvent()">
+                    <v-text-field
+                        v-model="nuevoUsuario.nombre"
+                        :rules="rules.NameRules"
+                        label="Nombre"
+                    ></v-text-field>
+
+                    <v-text-field 
+                        v-model="nuevoUsuario.apellido" 
+                        label="Apellido"
+                        :rules="rules.NameRules"
+                    ></v-text-field>
+                    
+                    <v-text-field 
+                        v-model="nuevoUsuario.email" 
+                        label="Correo electrónico"
+                        :rules="rules.emailRules"
+                    ></v-text-field>
+
+                    <v-text-field 
+                        v-model="nuevoUsuario.documento" 
+                        label="N° de documento"
+                        :rules="rules.documentoRules"
+                    ></v-text-field>
+
+                    <v-text-field 
+                        v-model="nuevoUsuario.telefono" 
+                        label="Teléfono"
+                    ></v-text-field>
+
+                    <v-text-field 
+                        v-model="nuevoUsuario.contraseña" 
+                        label="Contraseña"
+                        type="password"
+                    ></v-text-field>
+
+                    <v-select
+                        clearable
+                        label="Rol de Usuario"
+                        v-model="nuevoUsuario.rol_id"
+                        :items="roles"
+                        item-value="id"
+                        item-title="nombre"
+                    ></v-select>
+
+                    <div class="d-flex flex-column ga-2">
+                        <v-btn 
+                            class="mt-2 bg-indigo-darken-1" 
+                            type="submit" 
+                            text="Guardar"
+                            block
+                            :loading="loading"
+                        >
+                        </v-btn>
+                        <v-btn
+                            class="ms-auto bg-blue-grey-lighten-4"
+                            type="button"
+                            text="Cerrar"
+                            block
+                            @click="agregarModal = false"
+                        >
+                        </v-btn>
+                    </div>
+                </v-form>
+
+            </v-card-text>
         </v-card>
         </v-dialog>
 
