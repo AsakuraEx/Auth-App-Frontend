@@ -37,10 +37,38 @@ export const useUsuarioStore = defineStore('usuarios', ()=>{
             return e
         }
     }
+
+    async function actualizarUsuario(data){
+        try {
+            const response = await usuarioService.actualizarUsuario(data);
+            if(response.status === 200){
+                return response
+            }
+        }catch(e){
+            console.log(e)
+            return e
+        }
+    }
+
+    async function obtenerUsuarioPorId(id){
+
+        try{
+            const response = await usuarioService.obtenerUsuarioPorId(id);
+            if(response.status === 200){
+                return response.data
+            }
+        }catch(e){
+            console.error(e)
+            return e
+        }
+
+    }
     
     return {
         obtenerUsuarios,
         toggleEstadoUsuario,
-        agregarUsuario
+        agregarUsuario,
+        actualizarUsuario,
+        obtenerUsuarioPorId
     }
 })

@@ -10,8 +10,16 @@ export default {
         return api.post('/usuarios', data)
     },
 
+    actualizarUsuario(data){
+        return api.put('/usuarios', data)
+    },
+
     toggleEstadoUsuario(id){
         return api.patch(`/usuarios/estado/${id}`)
+    },
+
+    obtenerUsuarioPorId(id){
+        return api.get(`/usuarios/${id}`)
     }
 
 }

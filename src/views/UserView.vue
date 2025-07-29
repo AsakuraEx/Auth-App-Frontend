@@ -16,6 +16,8 @@ import { useToastStore } from '@/stores/toast.store';
 
     const agregarModal = ref(false)
 
+    const actualizarUsuario = ref(false)
+
     const nuevoUsuario = reactive({
         nombre: '',
         apellido: '',
@@ -62,23 +64,77 @@ import { useToastStore } from '@/stores/toast.store';
         }
     }
 
+    const mostrarModalActualizar = async (id) => {
+
+        actualizarUsuario.value = true;
+        agregarModal.value = true
+        const usuarioEncontrado = await usuarioStore.obtenerUsuarioPorId(id);
+        Object.assign(nuevoUsuario, {
+            id: usuarioEncontrado.id,
+            nombre: usuarioEncontrado.nombre,
+            apellido: usuarioEncontrado.apellido,
+            email: usuarioEncontrado.email,
+            documento: usuarioEncontrado.documento,
+            telefono: usuarioEncontrado.telefono,
+            contraseña: usuarioEncontrado.contraseña,
+            rol_id: usuarioEncontrado.rol_id.id,
+        });
+
+    }
+
     const submitHandledEvent = async () => {
 
-        const response = await usuarioStore.agregarUsuario(nuevoUsuario);
-        if(response){
-           if(response.data){
-               toastStore.MostrarConfirmacion('Se creo el usuario correctamente')
-               await obtenerUsuarios()
-               agregarModal.value = false
-               return
-           }
-           
-           if(response.response){
-                toastStore.MostrarError(response.response.data.message)
-           }
+        if(actualizarUsuario.value){
+
+            const response = await usuarioStore.actualizarUsuario(nuevoUsuario);
+            if(response){
+               if(response.data){
+                   toastStore.MostrarConfirmacion('Se actualizo el usuario correctamente')
+                   await obtenerUsuarios()
+                   cerrarModal()
+                   return
+               }
+               
+               if(response.response){
+                    toastStore.MostrarError(response.response.data.message)
+               }
+            }
+
+        }else{
+
+            const response = await usuarioStore.agregarUsuario(nuevoUsuario);
+            if(response){
+               if(response.data){
+                   toastStore.MostrarConfirmacion('Se creo el usuario correctamente')
+                   await obtenerUsuarios()
+                   cerrarModal()
+                   return
+               }
+               
+               if(response.response){
+                    toastStore.MostrarError(response.response.data.message)
+               }
+            }
+
         }
 
-        
+
+    }
+
+    const cerrarModal = () => {
+
+        agregarModal.value = false
+        actualizarUsuario.value = false
+        Object.assign(nuevoUsuario, {
+            id: '',
+            nombre: '',
+            apellido: '',
+            email: '',
+            documento: '',
+            telefono: '',
+            contraseña: '',
+            rol_id: null
+        });
 
     }
 
@@ -162,6 +218,7 @@ import { useToastStore } from '@/stores/toast.store';
                         :icon="mdiSquareEditOutline" 
                         class="text-orange-darken-1"
                         variant="text"
+                        @click="mostrarModalActualizar(usuario.id)"
                     >
                     </v-btn>
                 </td>
@@ -176,7 +233,7 @@ import { useToastStore } from '@/stores/toast.store';
         <v-card
             max-width="400"
             :prepend-icon="mdiContentSave"
-            title="Agregar nuevo usuario"
+            :title="actualizarUsuario ? 'Actualizar un usuario existente' : 'Agregar nuevo usuario'"
         >
 
             <v-card-text>
@@ -215,6 +272,7 @@ import { useToastStore } from '@/stores/toast.store';
                         v-model="nuevoUsuario.contraseña" 
                         label="Contraseña"
                         type="password"
+                        v-if="!actualizarUsuario"
                     ></v-text-field>
 
                     <v-select
@@ -230,7 +288,7 @@ import { useToastStore } from '@/stores/toast.store';
                         <v-btn 
                             class="mt-2 bg-indigo-darken-1" 
                             type="submit" 
-                            text="Guardar"
+                            :text="actualizarUsuario ? 'Actualizar' : 'Guardar'"
                             block
                             :loading="loading"
                         >
@@ -240,7 +298,7 @@ import { useToastStore } from '@/stores/toast.store';
                             type="button"
                             text="Cerrar"
                             block
-                            @click="agregarModal = false"
+                            @click="cerrarModal()"
                         >
                         </v-btn>
                     </div>
