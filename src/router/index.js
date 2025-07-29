@@ -32,6 +32,18 @@ const router = createRouter({
       beforeEnter: authGuard
     },
     {
+      path: '/roles/create',
+      name: 'rolesCreate',
+      component: () => import('../views/NuevoRolView.vue'),
+      beforeEnter: authGuard
+    },
+    {
+      path: '/roles/:id',
+      name: 'detalleRoles',
+      component: () => import('../views/DetalleRolView.vue'),
+      beforeEnter: authGuard
+    },
+    {
       path: '/permisos',
       name: 'permisos',
       component: () => import('../views/PermisosView.vue'),

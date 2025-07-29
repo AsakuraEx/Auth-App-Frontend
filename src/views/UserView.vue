@@ -76,7 +76,6 @@ import { useToastStore } from '@/stores/toast.store';
             email: usuarioEncontrado.email,
             documento: usuarioEncontrado.documento,
             telefono: usuarioEncontrado.telefono,
-            contraseña: usuarioEncontrado.contraseña,
             rol_id: usuarioEncontrado.rol_id.id,
         });
 
@@ -144,7 +143,7 @@ import { useToastStore } from '@/stores/toast.store';
 
 <template>
     <div class="pa-4">
-        <p class="text-h4">Usuarios registrados en el sistema</p>
+        <p class="text-h4 font-weight-bold">Usuarios registrados en el sistema</p>
     </div>
 
     <div class="pa-4 d-flex justify-end">

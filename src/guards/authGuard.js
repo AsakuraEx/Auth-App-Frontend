@@ -1,8 +1,8 @@
 import { jwtDecode } from "jwt-decode"
 
 const authGuard = (to, from, next) => {
+  
   const token = localStorage.getItem('token')
-  const decoded = jwtDecode(token)
 
   if (to.meta.requiresAuth) {
     // No hay token → redirige
@@ -10,6 +10,7 @@ const authGuard = (to, from, next) => {
       return next({ name: 'login' })
     }
 
+    const decoded = jwtDecode(token)
     // Hay token pero está expirado → redirige
     if (Date.now() > decoded.exp * 1000) {
       localStorage.clear()
