@@ -5,7 +5,6 @@ export const rules = {
         value => (value && value.length <= 100) || 'El máximo de caracteres permitidos es de 50'
     ],
     DescriptionRules: [
-        value =>  (value && value.length >= 3) || 'Debe agregar al menos 3 caracteres',
         value => (value && value.length <= 600) || 'El máximo de caracteres permitidos es de 600'
     ],
     emailRules: [

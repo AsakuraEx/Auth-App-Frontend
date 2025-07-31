@@ -38,6 +38,12 @@ const router = createRouter({
       beforeEnter: authGuard
     },
     {
+      path: '/roles/update/:id',
+      name: 'rolesUpdate',
+      component: () => import('../views/ActualizarRolView.vue'),
+      beforeEnter: authGuard
+    },
+    {
       path: '/roles/:id',
       name: 'detalleRoles',
       component: () => import('../views/DetalleRolView.vue'),

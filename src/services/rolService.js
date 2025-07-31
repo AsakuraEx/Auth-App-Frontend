@@ -13,4 +13,8 @@ export default {
         return api.post('/roles', data)
     },
 
+    actualizarRol(data){
+        return api.put('/roles', data)
+    }
+    
 }

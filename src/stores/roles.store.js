@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import rolService from "@/services/rolService";
+import { ref } from "vue";
 
 export const useRolStore = defineStore('roles', ()=>{
     
@@ -56,11 +57,37 @@ export const useRolStore = defineStore('roles', ()=>{
         }
 
     }
+
+    async function actualizarRol(data){
+        try{
+            const response = await rolService.actualizarRol(data);
+            if(response.status === 201){
+                return response
+            }
+        }catch(e){
+            console.error(e)
+            return e
+        }
+    }
     
+    const mensaje = ref('')
+
+    const enviarMensaje = (texto) => {
+        mensaje.value = texto;
+    }
+
+    const limpiarMensaje = () => {
+        mensaje.value = ''
+    }
+
     return {
         obtenerRoles,
         obtenerRolPorId,
         obtenerPermisos,
-        crearRoles
+        crearRoles,
+        actualizarRol,
+        mensaje,
+        enviarMensaje,
+        limpiarMensaje
     }
 })

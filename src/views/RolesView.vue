@@ -1,11 +1,13 @@
 <script setup>
 import { useRolStore } from '@/stores/roles.store';
-import { mdiEye } from '@mdi/js';
+import { useToastStore } from '@/stores/toast.store';
+import { mdiEye, mdiPencil, mdiUpdate } from '@mdi/js';
 import { onMounted, ref } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const router = useRouter()
 const rolStore = useRolStore()
+const toastStore = useToastStore()
 const roles = ref([]);
 
 const verDetalleRol = (id) => {
@@ -17,6 +19,11 @@ const verDetalleRol = (id) => {
 onMounted(async ()=>{
 
     roles.value = await rolStore.obtenerRoles();
+
+    if(rolStore.mensaje){
+        await toastStore.MostrarConfirmacion(rolStore.mensaje)
+        rolStore.limpiarMensaje()
+    }
 
 })
 
@@ -75,6 +82,13 @@ onMounted(async ()=>{
                         class="text-blue-darken-1"
                         variant="text"
                         @click="verDetalleRol(rol.id)"
+                    >
+                    </v-btn>
+                    <v-btn 
+                        :icon="mdiPencil" 
+                        class="text-orange-darken-1"
+                        variant="text"
+                        :to="{name: 'rolesUpdate', params: {id: rol.id}}"
                     >
                     </v-btn>
                 </td>
